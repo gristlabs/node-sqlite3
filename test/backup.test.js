@@ -37,7 +37,8 @@ describe('backup', function() {
             db = null;
             if (!err) throw new Error('should have an error');
             if (err.errno == sqlite3.BUSY &&
-                err.message === 'SQLITE_BUSY: unable to close due to unfinalized statements or unfinished backups') {
+                (err.message === 'SQLITE_BUSY: unable to close due to unfinalized statements or unfinished backups' ||
+                 err.message === 'SQLITE_BUSY: unable to close due to unfinished backup operation')) {
                 done();
             }
             else throw err;
@@ -71,6 +72,21 @@ describe('backup', function() {
                         });
                     });
                 });
+            });
+        });
+    });
+
+    it ('using the backup after finished is an error', function(done) {
+        var backup = db.backup('test/tmp/backup.db', 'main');
+        backup.finish(function(err) {
+            if (err) throw err;
+            backup.step(1, function(err) {
+                if (!err) throw new Error('should have an error');
+                if (err.errno == sqlite3.MISUSE &&
+                    err.message === 'SQLITE_MISUSE: Backup is already finished') {
+                    done();
+                }
+                else throw err;
             });
         });
     });
