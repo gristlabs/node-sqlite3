@@ -213,7 +213,6 @@ void Backup::Work_AfterInitialize(uv_work_t* req) {
             TRY_CATCH_CALL(backup->handle(), cb, 1, argv);
         }
     }
-
     BACKUP_END();
 }
 
@@ -272,11 +271,11 @@ NAN_METHOD(Backup::Finish) {
 }
 
 void Backup::Work_BeginFinish(Baton* baton) {
-    BACKUP_BEGIN(Step);
+    BACKUP_BEGIN(Finish);
 }
 
 void Backup::Work_Finish(uv_work_t* req) {
-    BACKUP_INIT(StepBaton);
+    BACKUP_INIT(Baton);
     sqlite3_backup_finish(backup->_handle);
     backup->_handle = NULL;
     if (backup->db2) {
@@ -288,7 +287,7 @@ void Backup::Work_Finish(uv_work_t* req) {
 void Backup::Work_AfterFinish(uv_work_t* req) {
     Nan::HandleScope scope;
 
-    BACKUP_INIT(StepBaton);
+    BACKUP_INIT(Baton);
     backup->Finisher();
 
     // Fire callback in case there was one.
@@ -296,6 +295,8 @@ void Backup::Work_AfterFinish(uv_work_t* req) {
     if (!cb.IsEmpty() && cb->IsFunction()) {
         TRY_CATCH_CALL(backup->handle(), cb, 0, NULL);
     }
+
+    BACKUP_END();
 }
 
 void Backup::Finisher() {
