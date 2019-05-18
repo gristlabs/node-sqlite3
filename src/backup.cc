@@ -201,6 +201,15 @@ void Backup::Work_Initialize(uv_work_t* req) {
     backup->status = sqlite3_open(baton->filename.c_str(), &backup->_otherDb);
 
     if (backup->status == SQLITE_OK) {
+        if (baton->filenameIsDest) {
+            // When writing backup to an external file:
+            // Turn off protections that can slow backup steps.  If the app or OS
+            // crashes, the backup may be corrupt.  In Grist use case, if app or OS
+            // crashes, no use will be made of backup, so OK.  In general, it should
+            // be an option.
+            sqlite3_exec(backup->_otherDb, "PRAGMA synchronous=OFF; PRAGMA journal_mode=OFF;",
+                         0, 0, 0);
+        }
         backup->_handle = sqlite3_backup_init(
             baton->filenameIsDest ? backup->_otherDb : backup->db->_handle,
             baton->destName.c_str(),
