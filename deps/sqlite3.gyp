@@ -90,7 +90,6 @@
           'SQLITE_ENABLE_JSON1',
           'SQLITE_ENABLE_RTREE',
           'SQLITE_ENABLE_DBSTAT_VTAB=1',
-          'SQLITE_MAX_ATTACHED=0'
         ],
       },
       'cflags_cc': [
@@ -106,7 +105,6 @@
         'SQLITE_ENABLE_JSON1',
         'SQLITE_ENABLE_RTREE',
         'SQLITE_ENABLE_DBSTAT_VTAB=1',
-        'SQLITE_MAX_ATTACHED=0'
       ],
       'export_dependent_settings': [
         'action_before_build',

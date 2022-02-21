@@ -1,7 +1,8 @@
 var sqlite3 = require('..');
 var helper = require('./support/helper');
 
-describe('attach', function() {
+// TODO turns out that disabling ATTACH causes other problems, so it's not disabled any more, for now
+describe.skip('attach', function() {
   // Check that ATTACH is not supported, as part of defense in depth measures.
   it ('does not permit attaching another db', function(done) {
     helper.ensureExists('test/tmp/');
