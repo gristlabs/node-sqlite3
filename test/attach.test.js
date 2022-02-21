@@ -4,6 +4,7 @@ var helper = require('./support/helper');
 describe('attach', function() {
   // Check that ATTACH is not supported, as part of defense in depth measures.
   it ('does not permit attaching another db', function(done) {
+    helper.ensureExists('test/tmp/');
     helper.deleteFile('test/tmp/test_attach.db');
     var db = new sqlite3.Database('test/tmp/test_attach.db', function(err) {
       if (err) throw err;
