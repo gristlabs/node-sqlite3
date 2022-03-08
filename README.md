@@ -1,3 +1,15 @@
+# Quick instructions for Grist devs
+
+1. Run `make` to install dependencies and build. Delete the `package-lock.json` which this creates.
+2. Possibly rename `build-tmp-napi-v3` or something to `build`. Don't know why it isn't just `build` and if this is system-specific.
+3. Run `npm run rebuild-tests` which puts files in `test/cpp`, particularly `marshal.node`.
+4. Run `npm test`. A failure in the test `respects ELECTRON_VERSION` is OK.
+5. Maybe run `npm pack`? Not sure if needed.
+6. Run `npm publish`.
+
+----
+----
+
 Asynchronous, non-blocking [SQLite3](https://sqlite.org/) bindings for [Node.js](http://nodejs.org/).
 
 [![NPM](https://nodei.co/npm/sqlite3.png?downloads=true&downloadRank=true)](https://nodei.co/npm/sqlite3/)
