@@ -2,6 +2,8 @@
 
 #if defined(__linux__)
 
+#ifndef _GNU_SOURCE
+
 #define _GNU_SOURCE
 #include <features.h>
 #undef _GNU_SOURCE
@@ -22,6 +24,8 @@ __asm__(".symver exp,exp@GLIBC_2.17");
 __asm__(".symver log,log@GLIBC_2.17");
 __asm__(".symver pow,pow@GLIBC_2.17");
 __asm__(".symver fcntl64,fcntl@GLIBC_2.17");
+#endif
+
 #endif
 
 #endif
