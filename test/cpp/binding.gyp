@@ -5,7 +5,7 @@
         "defines": [ "V8_DEPRECATION_WARNINGS=1" ],
         "conditions" : [
             ["OS=='linux'", {"libraries+": ["../../../build/<(PRODUCT_DIR)/node_sqlite3.node"] } ],
-            ["OS=='win'", {"libraries+": ["../../../build/<(PRODUCT_DIR)/node_sqlite3.node"] } ]
+            ["OS=='win'", {"libraries+": ["<(PRODUCT_DIR)/../../../../build/Release/node_sqlite3.node"] } ]
         ],
         "include_dirs": [
           "<!@(node -p \"require('node-addon-api').include\")","<!(node -e \"require('../..')\")"],
