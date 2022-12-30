@@ -21,5 +21,3 @@ if [ ! -e build ]; then
   ln -s build-tmp-napi-v6 build
   echo Added build
 fi
-
-node-gyp rebuild --directory test/cpp
