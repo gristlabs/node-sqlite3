@@ -55,6 +55,7 @@
   "devDependencies": {
     "eslint": "6.8.0",
     "mocha": "7.2.0",
+    "bindings": "^1.3.0",
     "node-pre-gyp-github": "1.4.4"
   },
   "peerDependencies": {
@@ -74,7 +75,7 @@
     "install": "node-pre-gyp install --fallback-to-build",
     "pretest": "node test/support/createdb.js",
     "test": "./scripts/prepare_for_test.sh; mocha -R spec --timeout 480000",
-    "rebuild-tests": "node-gyp rebuild --directory test/cpp",
+    "rebuild-tests": "./scripts/prepare_for_test.sh; node-gyp rebuild --directory test/cpp",
     "pack": "node-pre-gyp package"
   },
   "license": "BSD-3-Clause",

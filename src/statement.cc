@@ -19,7 +19,7 @@ Napi::Object Statement::Init(Napi::Env env, Napi::Object exports) {
       InstanceMethod("get", &Statement::Get, napi_default_method),
       InstanceMethod("run", &Statement::Run, napi_default_method),
       InstanceMethod("all", &Statement::All, napi_default_method),
-      //InstanceMethod("allMarshal", &Statement::AllMarshal),
+      InstanceMethod("allMarshal", &Statement::AllMarshal, napi_default_method),
       InstanceMethod("each", &Statement::Each, napi_default_method),
       InstanceMethod("reset", &Statement::Reset, napi_default_method),
       InstanceMethod("finalize", &Statement::Finalize_, napi_default_method),
