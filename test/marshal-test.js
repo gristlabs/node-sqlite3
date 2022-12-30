@@ -7,7 +7,8 @@ const bindings = require('bindings');
 
 const testRoot = path.resolve(__dirname, 'cpp');
 const mainRoot = path.resolve(__dirname, '..');
-bindings({ module_root: mainRoot, bindings: 'node_sqlite3' });
+var sqlite3 = require('..');
+//bindings({ module_root: mainRoot, bindings: 'node_sqlite3' });
 const marshal = bindings({ module_root: testRoot, bindings: 'marshal' });
 
 describe('marshal', function() {
