@@ -14,9 +14,12 @@ if [ ! -e lib/binding/$expected/node_sqlite3.node ]; then
   mkdir -p $expected
   ln -s ../$target $expected/node_sqlite3.node
   echo Added lib/binding/$expected/node_sqlite3.node
+  cd ../..
 fi
 
 if [ ! -e build ]; then
   ln -s build-tmp-napi-v6 build
   echo Added build
 fi
+
+node-gyp rebuild --directory test/cpp
