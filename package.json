@@ -73,7 +73,7 @@
     "build": "node-pre-gyp build",
     "build:debug": "node-pre-gyp build --debug",
     "install": "node-pre-gyp install --fallback-to-build",
-    "pretest": "( node test/support/createdb.js && ./scripts/prepare_for_test.sh ) || node-gyp rebuild --directory test/cpp",
+    "pretest": "node test/support/createdb.js && ./scripts/prep.cmd && node-gyp rebuild --directory test/cpp",
     "test": "mocha -R spec --timeout 480000",
     "rebuild-tests": "node-gyp rebuild --directory test/cpp",
     "pack": "node-pre-gyp package"
