@@ -5,11 +5,13 @@ const assert = require('assert');
 const util = require('util');
 const bindings = require('bindings');
 
-const testRoot = path.resolve(__dirname, 'cpp');
-const mainRoot = path.resolve(__dirname, '..');
+//const testRoot = path.resolve(__dirname, 'cpp');
+//const mainRoot = path.resolve(__dirname, '..');
 var sqlite3 = require('..');
 //bindings({ module_root: mainRoot, bindings: 'node_sqlite3' });
-const marshal = bindings({ module_root: testRoot, bindings: 'marshal' });
+//const marshal = bindings({ module_root: testRoot, bindings: 'marshal' });
+
+const marshal = sqlite3;
 
 describe('marshal', function() {
   function stringToArray(str) {
