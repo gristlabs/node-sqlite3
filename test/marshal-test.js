@@ -3,7 +3,7 @@
 const path = require('path');
 const assert = require('assert');
 const util = require('util');
-const bindings = require('bindings');
+//const bindings = require('bindings');
 
 //const testRoot = path.resolve(__dirname, 'cpp');
 //const mainRoot = path.resolve(__dirname, '..');
