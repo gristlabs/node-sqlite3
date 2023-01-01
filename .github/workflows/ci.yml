@@ -32,11 +32,11 @@ jobs:
 #          - 14
           - 16
 #          - 18
-#        include:
-#          - os: windows-latest
-#            node: 16
-#            host: x86
-#            target: x86
+        include:
+          - os: windows-latest
+            node: 16
+            host: x86
+            target: x86
 #          - os: macos-m1
 #            node: 16
 #            host: arm64
