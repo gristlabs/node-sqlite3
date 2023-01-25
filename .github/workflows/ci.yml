@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - master
+      - grist-main
+      - grist-main-dev
     tags:
       - '*'
 env:
@@ -41,6 +43,7 @@ jobs:
             node: 16
             host: x86
             target: x86
+          # This is a self-hosted runner, github doesn't have this architecture yet.
           - os: macos-m1
             node: 16
             host: arm64

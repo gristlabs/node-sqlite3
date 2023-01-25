@@ -3,12 +3,7 @@
 const path = require('path');
 const assert = require('assert');
 const util = require('util');
-const bindings = require('bindings');
-
-const testRoot = path.resolve(__dirname, 'cpp');
-const mainRoot = path.resolve(__dirname, '..');
-bindings({ module_root: mainRoot, bindings: 'node_sqlite3' });
-const marshal = bindings({ module_root: testRoot, bindings: 'marshal' });
+const marshal = require('..');  // Marshaling test hooks are now in library.
 
 describe('marshal', function() {
   function stringToArray(str) {

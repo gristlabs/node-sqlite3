@@ -2,7 +2,7 @@
   "name": "@gristlabs/sqlite3",
   "description": "Asynchronous, non-blocking SQLite3 bindings",
   "version": "4.1.1-grist.6",
-  "homepage": "https://github.com/TryGhost/node-sqlite3",
+  "homepage": "https://github.com/gristlabs/node-sqlite3",
   "author": {
     "name": "Mapbox",
     "url": "https://mapbox.com/"
@@ -10,7 +10,7 @@
   "binary": {
     "module_name": "node_sqlite3",
     "module_path": "./lib/binding/napi-v{napi_build_version}-{platform}-{libc}-{arch}",
-    "host": "https://github.com/TryGhost/node-sqlite3/releases/download/",
+    "host": "https://github.com/gristlabs/node-sqlite3/releases/download/",
     "remote_path": "v{version}",
     "package_name": "napi-v{napi_build_version}-{platform}-{libc}-{arch}.tar.gz",
     "napi_versions": [
@@ -45,7 +45,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/TryGhost/node-sqlite3.git"
+    "url": "https://github.com/gristlabs/node-sqlite3.git"
   },
   "dependencies": {
     "@mapbox/node-pre-gyp": "^1.0.0",
@@ -73,7 +73,7 @@
     "build:debug": "node-pre-gyp build --debug",
     "install": "node-pre-gyp install --fallback-to-build",
     "pretest": "node test/support/createdb.js",
-    "test": "./scripts/prepare_for_test.sh; mocha -R spec --timeout 480000",
+    "test": "mocha -R spec --timeout 480000",
     "rebuild-tests": "node-gyp rebuild --directory test/cpp",
     "pack": "node-pre-gyp package"
   },
