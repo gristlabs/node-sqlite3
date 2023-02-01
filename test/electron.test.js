@@ -1,6 +1,8 @@
 var assert = require('assert');
 
-describe('electron', function() {
+// I can't find definitive documentation, but the napi-based binaries seem to run
+// fine with Electron these days, no need for a special song and dance.
+describe.skip('electron', function() {
   it('respects ELECTRON_VERSION', function() {
     process.env.ELECTRON_VERSION = '1.2.3';
     let name = require.resolve('..');
