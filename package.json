@@ -1,7 +1,7 @@
 {
   "name": "@gristlabs/sqlite3",
   "description": "Asynchronous, non-blocking SQLite3 bindings",
-  "version": "5.1.4-grist.7",
+  "version": "5.1.4-grist.8",
   "homepage": "https://github.com/gristlabs/node-sqlite3",
   "author": {
     "name": "Mapbox",
@@ -74,7 +74,7 @@
     "install": "node-pre-gyp install --fallback-to-build",
     "pretest": "node test/support/createdb.js",
     "test": "mocha -R spec --timeout 480000",
-    "rebuild-tests": "node-gyp rebuild --directory test/cpp",
+    "test:memory": "node test/support/memory_check.js",
     "pack": "node-pre-gyp package"
   },
   "license": "BSD-3-Clause",

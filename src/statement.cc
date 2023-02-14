@@ -637,7 +637,7 @@ void Statement::Work_BeginAllMarshal(Baton* baton) {
 void Statement::Work_AllMarshal(napi_env e, void* data) {
     STATEMENT_INIT(MarshalBaton);
 
-    sqlite3_mutex* mtx = sqlite3_db_mutex(stmt->db->_handle);
+    STATEMENT_MUTEX(mtx);
     sqlite3_mutex_enter(mtx);
 
     sqlite3_stmt* sqstmt = stmt->_handle;
@@ -701,11 +701,13 @@ void Statement::Work_AllMarshal(napi_env e, void* data) {
 }
 
 void Statement::Work_AfterAllMarshal(napi_env e, napi_status status, void* data) {
-    STATEMENT_INIT(MarshalBaton);
+    std::unique_ptr<MarshalBaton> baton(static_cast<MarshalBaton*>(data));
+    Statement* stmt = baton->stmt;
 
     Napi::Env env = stmt->Env();
+    Napi::HandleScope scope(env);
     if (stmt->status != SQLITE_DONE) {
-        Error(baton);
+        Error(baton.get());
     } else {
         // Fire callbacks.
         Napi::Function cb = baton->callback.Value();
