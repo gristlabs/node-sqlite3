@@ -23,6 +23,7 @@ Napi::Object Statement::Init(Napi::Env env, Napi::Object exports) {
       InstanceMethod("each", &Statement::Each, napi_default_method),
       InstanceMethod("reset", &Statement::Reset, napi_default_method),
       InstanceMethod("finalize", &Statement::Finalize_, napi_default_method),
+      InstanceAccessor("readOnly", &Statement::ReadOnlyGetter, nullptr),
     });
 
     exports.Set("Statement", t);
@@ -151,6 +152,9 @@ void Statement::Work_Prepare(napi_env e, void* data) {
         stmt->message = std::string(sqlite3_errmsg(baton->db->_handle));
         stmt->_handle = NULL;
     }
+    // sqlite3_stmt_readonly is an instant operation (just reading out
+    // something already computed). And it can handle null.
+    stmt->readOnly = bool(sqlite3_stmt_readonly(stmt->_handle));
 
     sqlite3_mutex_leave(mtx);
 }
@@ -1024,6 +1028,11 @@ void Statement::Finalize_() {
     sqlite3_finalize(_handle);
     _handle = NULL;
     db->Unref();
+}
+
+Napi::Value Statement::ReadOnlyGetter(const Napi::CallbackInfo& info) {
+    Statement *statement = this;
+    return Napi::Boolean::New(this->Env(), statement->readOnly);
 }
 
 void Statement::CleanQueue() {
