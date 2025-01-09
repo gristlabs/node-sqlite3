@@ -29,17 +29,15 @@ jobs:
         target:
           - x64
         node:
-          - 14
-          - 16
-          - 18
+          - 22
         include:
           - os: windows-latest
-            node: 16
+            node: 22
             host: x86
             target: x86
           # This is a self-hosted runner, github doesn't have this architecture yet.
           - os: macos-m1
-            node: 16
+            node: 22
             host: arm64
             target: arm64
     name: ${{ matrix.os }} (node=${{ matrix.node }}, host=${{ matrix.host }}, target=${{ matrix.target }})
@@ -110,7 +108,6 @@ jobs:
 
       - name: Upload binaries to commit artifacts
         uses: actions/upload-artifact@v4
-        if: matrix.node == 16
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: build/stage/*/*
@@ -118,7 +115,7 @@ jobs:
 
       - name: Upload binaries to GitHub Release
         run: yarn node-pre-gyp-github publish
-        if: matrix.node == 16 && startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           NODE_PRE_GYP_GITHUB_TOKEN: ${{ github.token }}
   build-qemu:
@@ -128,7 +125,7 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - 16
+          - 22
         target:
           - linux/arm64
         variant:
@@ -138,7 +135,6 @@ jobs:
           # musl x64 builds
           - target: linux/amd64
             variant: alpine3.15
-            node: 16
     name: ${{ matrix.variant }} (node=${{ matrix.node }}, target=${{ matrix.target }})
     steps:
       - uses: actions/checkout@v3
@@ -172,7 +168,6 @@ jobs:
 
       - name: Upload binaries to commit artifacts
         uses: actions/upload-artifact@v4
-        if: matrix.node == 16
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: build/stage/*/*
@@ -180,6 +175,6 @@ jobs:
 
       - name: Upload binaries to GitHub Release
         run: yarn install --ignore-scripts && yarn node-pre-gyp-github publish
-        if: matrix.node == 16 && startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           NODE_PRE_GYP_GITHUB_TOKEN: ${{ github.token }}
