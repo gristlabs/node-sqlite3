@@ -101,11 +101,18 @@ jobs:
       - name: Package prebuilt binaries
         run: yarn node-pre-gyp package --target_arch=${{ env.TARGET }}
 
+      - name: Prepare for saving artifact
+        run: |
+          ARTIFACT_NAME=$(echo prebuilt-binaries-${{ matrix.os }}-${{ matrix.target }} | sed 's/[^-a-zA-Z0-9]/_/g')
+          echo "Artifact name is '$ARTIFACT_NAME'"
+          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
+        shell: bash
+
       - name: Upload binaries to commit artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: matrix.node == 16
         with:
-          name: prebuilt-binaries
+          name: ${{ env.ARTIFACT_NAME }}
           path: build/stage/*/*
           retention-days: 7
 
@@ -156,11 +163,18 @@ jobs:
           CONTAINER_ID=$(docker create -it sqlite-builder)
           docker cp $CONTAINER_ID:/usr/src/build/build/ ./build
 
+      - name: Prepare for saving artifact
+        run: |
+          ARTIFACT_NAME=$(echo prebuilt-binaries-${{ matrix.variant }}-${{ matrix.target }} | sed 's/[^-a-zA-Z0-9]/_/g')
+          echo "Artifact name is '$ARTIFACT_NAME'"
+          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
+        shell: bash
+
       - name: Upload binaries to commit artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: matrix.node == 16
         with:
-          name: prebuilt-binaries
+          name: ${{ env.ARTIFACT_NAME }}
           path: build/stage/*/*
           retention-days: 7
 
