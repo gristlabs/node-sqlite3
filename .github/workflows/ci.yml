@@ -22,24 +22,22 @@ jobs:
       matrix:
         os:
           - macos-latest
-          - ubuntu-20.04
+          - ubuntu-24.04
           - windows-latest
         host:
           - x64
         target:
           - x64
         node:
-          - 14
-          - 16
-          - 18
+          - 22
         include:
           - os: windows-latest
-            node: 16
+            node: 22
             host: x86
             target: x86
           # This is a self-hosted runner, github doesn't have this architecture yet.
           - os: macos-m1
-            node: 16
+            node: 22
             host: arm64
             target: arm64
     name: ${{ matrix.os }} (node=${{ matrix.node }}, host=${{ matrix.host }}, target=${{ matrix.target }})
@@ -101,17 +99,23 @@ jobs:
       - name: Package prebuilt binaries
         run: yarn node-pre-gyp package --target_arch=${{ env.TARGET }}
 
+      - name: Prepare for saving artifact
+        run: |
+          ARTIFACT_NAME=$(echo prebuilt-binaries-${{ matrix.os }}-${{ matrix.target }} | sed 's/[^-a-zA-Z0-9]/_/g')
+          echo "Artifact name is '$ARTIFACT_NAME'"
+          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
+        shell: bash
+
       - name: Upload binaries to commit artifacts
-        uses: actions/upload-artifact@v3
-        if: matrix.node == 16
+        uses: actions/upload-artifact@v4
         with:
-          name: prebuilt-binaries
+          name: ${{ env.ARTIFACT_NAME }}
           path: build/stage/*/*
           retention-days: 7
 
       - name: Upload binaries to GitHub Release
         run: yarn node-pre-gyp-github publish
-        if: matrix.node == 16 && startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           NODE_PRE_GYP_GITHUB_TOKEN: ${{ github.token }}
   build-qemu:
@@ -121,17 +125,13 @@ jobs:
       fail-fast: false
       matrix:
         node:
-          - 16
+          - 22
         target:
           - linux/arm64
+          - linux/amd64
         variant:
-          - bullseye
-          - alpine3.15
-        include:
-          # musl x64 builds
-          - target: linux/amd64
-            variant: alpine3.15
-            node: 16
+          - bookworm
+          - alpine
     name: ${{ matrix.variant }} (node=${{ matrix.node }}, target=${{ matrix.target }})
     steps:
       - uses: actions/checkout@v3
@@ -156,16 +156,22 @@ jobs:
           CONTAINER_ID=$(docker create -it sqlite-builder)
           docker cp $CONTAINER_ID:/usr/src/build/build/ ./build
 
+      - name: Prepare for saving artifact
+        run: |
+          ARTIFACT_NAME=$(echo prebuilt-binaries-${{ matrix.variant }}-${{ matrix.target }} | sed 's/[^-a-zA-Z0-9]/_/g')
+          echo "Artifact name is '$ARTIFACT_NAME'"
+          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
+        shell: bash
+
       - name: Upload binaries to commit artifacts
-        uses: actions/upload-artifact@v3
-        if: matrix.node == 16
+        uses: actions/upload-artifact@v4
         with:
-          name: prebuilt-binaries
+          name: ${{ env.ARTIFACT_NAME }}
           path: build/stage/*/*
           retention-days: 7
 
       - name: Upload binaries to GitHub Release
         run: yarn install --ignore-scripts && yarn node-pre-gyp-github publish
-        if: matrix.node == 16 && startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         env:
           NODE_PRE_GYP_GITHUB_TOKEN: ${{ github.token }}
