@@ -128,12 +128,10 @@ jobs:
           - 22
         target:
           - linux/arm64
+          - linux/amd64
         variant:
-          - bullseye
+          - bookworm
           - alpine
-        include:
-          # musl x64 builds
-          - target: linux/amd64
     name: ${{ matrix.variant }} (node=${{ matrix.node }}, target=${{ matrix.target }})
     steps:
       - uses: actions/checkout@v3
