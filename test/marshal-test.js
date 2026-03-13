@@ -10,6 +10,9 @@ describe('marshal', function() {
     return new Uint8Array(Buffer.from(str));
   }
   const samples = [
+    // Empty string and empty buffer exercise _writeBytes with 0 bytes.
+    ['', 'u\x00\x00\x00\x00'],
+    [new Uint8Array(0), 's\x00\x00\x00\x00'],
     [null, 'N'],
     [1, 'i\x01\x00\x00\x00'],
     [1000000, 'i@B\x0f\x00'],

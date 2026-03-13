@@ -99,6 +99,10 @@ jobs:
       - name: Package prebuilt binaries
         run: yarn node-pre-gyp package --target_arch=${{ env.TARGET }}
 
+      - name: Rebuild with assertions and re-test
+        if: contains(matrix.os, 'ubuntu')
+        run: yarn build:assert && yarn test
+
       - name: Prepare for saving artifact
         run: |
           ARTIFACT_NAME=$(echo prebuilt-binaries-${{ matrix.os }}-${{ matrix.target }} | sed 's/[^-a-zA-Z0-9]/_/g')

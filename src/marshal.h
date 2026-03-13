@@ -38,6 +38,7 @@ class Marshaller {
     }
 
     void _writeBytes(const void *bytes, size_t nbytes) {
+      if (nbytes == 0) return;
       size_t offset = buffer.size();
       buffer.resize(buffer.size() + nbytes);
       memcpy(&buffer[offset], bytes, nbytes);
@@ -57,7 +58,7 @@ class Marshaller {
 
     void append(const Marshaller &marshaller) {
       const std::vector<char> &buf = marshaller.getBuffer();
-      _writeBytes(&buf[0], buf.size());
+      _writeBytes(buf.data(), buf.size());
     }
 
     // Marshal the given value depending on its type.
@@ -68,7 +69,7 @@ class Marshaller {
     }
 
     void marshalString(const std::string &value) {
-      marshalString(&value[0], value.size());
+      marshalString(value.data(), value.size());
     }
 
     void marshalString(const char *value, int32_t size) {
