@@ -35,8 +35,7 @@ jobs:
             node: 22
             host: x86
             target: x86
-          # This is a self-hosted runner, github doesn't have this architecture yet.
-          - os: macos-m1
+          - os: macos-latest
             node: 22
             host: arm64
             target: arm64
@@ -47,10 +46,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           architecture: ${{ matrix.host }}
-
-      - name: Add yarn (self-hosted)
-        if: matrix.os == 'macos-m1'
-        run: npm install -g yarn
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
@@ -98,6 +93,10 @@ jobs:
 
       - name: Package prebuilt binaries
         run: yarn node-pre-gyp package --target_arch=${{ env.TARGET }}
+
+      - name: Rebuild with assertions and re-test
+        if: contains(matrix.os, 'ubuntu')
+        run: yarn build:assert && yarn test
 
       - name: Prepare for saving artifact
         run: |

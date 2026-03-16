@@ -60,5 +60,34 @@ describe('Database#allMarshal', function() {
         }
     });
 
+    it('should handle empty result set', function(done) {
+        db.allMarshal("SELECT * FROM foo WHERE 1=0", function(err, result) {
+            if (err) throw err;
+            // Should be a dict with column names mapping to empty lists:
+            // {s<col>[\x00\x00\x00\x00 ...} for each column, terminated by '0'
+            assert.ok(Buffer.isBuffer(result));
+            var parsed = sqlite3.parse(result);
+            assert.deepEqual(parsed, {row: [], num: [], flt: [], blb: []});
+            done();
+        });
+    });
+
+    it('should handle empty string and blob values', function(done) {
+        db.run("CREATE TABLE bar (txt text, blb blob)", function(err) {
+            if (err) throw err;
+            db.run("INSERT INTO bar VALUES('', X'')", function(err) {
+                if (err) throw err;
+                db.allMarshal("SELECT * FROM bar", function(err, result) {
+                    if (err) throw err;
+                    assert.ok(Buffer.isBuffer(result));
+                    var parsed = sqlite3.parse(result);
+                    assert.deepEqual(parsed.txt, ['']);
+                    assert.deepEqual(parsed.blb, [new Uint8Array(0)]);
+                    done();
+                });
+            });
+        });
+    });
+
     after(function(done) { db.close(done); });
 });
