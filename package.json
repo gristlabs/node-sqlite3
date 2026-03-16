@@ -1,7 +1,7 @@
 {
   "name": "@gristlabs/sqlite3",
   "description": "Asynchronous, non-blocking SQLite3 bindings",
-  "version": "5.1.4-grist.10",
+  "version": "5.1.4-grist.11",
   "homepage": "https://github.com/gristlabs/node-sqlite3",
   "author": {
     "name": "Mapbox",
