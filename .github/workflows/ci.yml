@@ -22,7 +22,7 @@ jobs:
       matrix:
         os:
           - macos-latest
-          - ubuntu-24.04
+          - ubuntu-22.04
           - windows-latest
         host:
           - x64
@@ -39,7 +39,7 @@ jobs:
             node: 22
             host: arm64
             target: arm64
-          - os: ubuntu-24.04-arm
+          - os: ubuntu-22.04-arm
             node: 22
             host: arm64
             target: arm64
@@ -130,8 +130,8 @@ jobs:
         node:
           - 22
         os:
-          - ubuntu-24.04
-          - ubuntu-24.04-arm
+          - ubuntu-22.04
+          - ubuntu-22.04-arm
         variant:
           - alpine
     name: ${{ matrix.variant }} (node=${{ matrix.node }}, os=${{ matrix.os }})

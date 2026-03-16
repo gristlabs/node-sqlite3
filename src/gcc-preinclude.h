@@ -13,6 +13,7 @@ __asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
 __asm__(".symver exp,exp@GLIBC_2.2.5");
 __asm__(".symver log,log@GLIBC_2.2.5");
 __asm__(".symver pow,pow@GLIBC_2.2.5");
+__asm__(".symver fmod,fmod@GLIBC_2.2.5");
 __asm__(".symver fcntl64,fcntl@GLIBC_2.2.5");
 #endif
 
@@ -21,6 +22,7 @@ __asm__(".symver memcpy,memcpy@GLIBC_2.17");
 __asm__(".symver exp,exp@GLIBC_2.17");
 __asm__(".symver log,log@GLIBC_2.17");
 __asm__(".symver pow,pow@GLIBC_2.17");
+__asm__(".symver fmod,fmod@GLIBC_2.17");
 __asm__(".symver fcntl64,fcntl@GLIBC_2.17");
 #endif
 
