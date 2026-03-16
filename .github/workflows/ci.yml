@@ -95,7 +95,7 @@ jobs:
         run: yarn node-pre-gyp package --target_arch=${{ env.TARGET }}
 
       - name: Rebuild with assertions and re-test
-        if: contains(matrix.os, 'ubuntu')
+        if: contains(matrix.os, 'ubuntu') && !startsWith(github.ref, 'refs/tags/')
         run: yarn build:assert && yarn test
 
       - name: Prepare for saving artifact
