@@ -216,6 +216,7 @@ public:
     WORK_DEFINITION(AllMarshal);
     WORK_DEFINITION(Each);
     WORK_DEFINITION(Reset);
+    Napi::Value ReadOnlyGetter(const Napi::CallbackInfo& info);
 
     Napi::Value Finalize_(const Napi::CallbackInfo& info);
 
@@ -251,6 +252,7 @@ protected:
     bool prepared;
     bool locked;
     bool finalized;
+    bool readOnly;
     std::queue<Call*> queue;
 };
 
