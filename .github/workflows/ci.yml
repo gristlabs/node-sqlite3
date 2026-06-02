@@ -22,43 +22,65 @@ jobs:
       matrix:
         os:
           - macos-latest
-          - ubuntu-22.04
+          - ubuntu-24.04
           - windows-latest
         host:
           - x64
         target:
           - x64
         node:
+          - 20
           - 22
+          - 24
+        exclude:
+          # Node 20 x64 crashes under Rosetta 2 on ARM64 macOS runners
+          - os: macos-latest
+            node: 20
+            host: x64
         include:
-          - os: windows-latest
-            node: 22
-            host: x86
-            target: x86
+          - os: macos-latest
+            node: 20
+            host: arm64
+            target: arm64
           - os: macos-latest
             node: 22
             host: arm64
             target: arm64
-          - os: ubuntu-22.04-arm
+          - os: macos-latest
+            node: 24
+            host: arm64
+            target: arm64
+          - os: ubuntu-24.04-arm
+            node: 20
+            host: arm64
+            target: arm64
+          - os: ubuntu-24.04-arm
             node: 22
+            host: arm64
+            target: arm64
+          - os: ubuntu-24.04-arm
+            node: 24
             host: arm64
             target: arm64
     name: ${{ matrix.os }} (node=${{ matrix.node }}, host=${{ matrix.host }}, target=${{ matrix.target }})
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
           architecture: ${{ matrix.host }}
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
+        uses: microsoft/setup-msbuild@v1.3
         if: contains(matrix.os, 'windows')
         with:
           msbuild-architecture: ${{ matrix.target }}
 
       - name: Install dependencies
         run: yarn install --ignore-scripts
+
+      - name: Check Node compatibility
+        run: node tools/semver-check.js
 
       - name: Add env vars
         shell: bash
@@ -77,66 +99,53 @@ jobs:
           echo "CFLAGS=${CFLAGS:-} -include ../src/gcc-preinclude.h" >> $GITHUB_ENV
           echo "CXXFLAGS=${CXXFLAGS:-} -include ../src/gcc-preinclude.h" >> $GITHUB_ENV
 
-      - name: Configure build
-        run: yarn node-pre-gyp configure --target_arch=${{ env.TARGET }}
-
       - name: Build binaries
-        run: yarn node-pre-gyp build --target_arch=${{ env.TARGET }}
+        run: yarn prebuild -a ${{ env.TARGET }}
 
       - name: Print binary info
         if: contains(matrix.os, 'ubuntu')
         run: |
-          ldd lib/binding/*/node_sqlite3.node
+          ldd build/**/node_sqlite3.node
           echo "---"
-          nm lib/binding/*/node_sqlite3.node | grep "GLIBC_" | c++filt || true
+          nm build/**/node_sqlite3.node | grep "GLIBC_" | c++filt || true
           echo "---"
-          file lib/binding/napi-v*/*
+          file build/**/node_sqlite3.node
 
       - name: Run tests
         run: yarn test
-
-      - name: Package prebuilt binaries
-        run: yarn node-pre-gyp package --target_arch=${{ env.TARGET }}
 
       - name: Rebuild with assertions and re-test
         if: contains(matrix.os, 'ubuntu') && !startsWith(github.ref, 'refs/tags/')
         run: yarn build:assert && yarn test
 
-      - name: Prepare for saving artifact
-        run: |
-          ARTIFACT_NAME=$(echo prebuilt-binaries-${{ matrix.os }}-${{ matrix.target }} | sed 's/[^-a-zA-Z0-9]/_/g')
-          echo "Artifact name is '$ARTIFACT_NAME'"
-          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
-        shell: bash
-
       - name: Upload binaries to commit artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
+        if: matrix.node == 24
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: build/stage/*/*
+          name: prebuilt-binaries-${{ matrix.os }}-${{ matrix.host }}
+          path: prebuilds/*
           retention-days: 7
 
       - name: Upload binaries to GitHub Release
-        run: yarn node-pre-gyp-github publish
-        if: startsWith(github.ref, 'refs/tags/')
-        env:
-          NODE_PRE_GYP_GITHUB_TOKEN: ${{ github.token }}
-  build-alpine:
-    runs-on: ${{ matrix.os }}
+        run: yarn upload --upload-all ${{ github.token }}
+        if: matrix.node == 24 && startsWith(github.ref, 'refs/tags/')
+
+  build-musl:
     if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
     strategy:
       fail-fast: false
       matrix:
-        node:
-          - 22
-        os:
-          - ubuntu-22.04
-          - ubuntu-22.04-arm
-        variant:
-          - alpine
-    name: ${{ matrix.variant }} (node=${{ matrix.node }}, os=${{ matrix.os }})
+        include:
+          - runner: ubuntu-24.04-arm
+            platform: linux/arm64
+            arch: arm64
+          - runner: ubuntu-24.04
+            platform: linux/amd64
+            arch: amd64
+    runs-on: ${{ matrix.runner }}
+    name: musl ${{ matrix.arch }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
 
       - name: Build binaries and test
         run: |
@@ -144,28 +153,19 @@ jobs:
             --file ./tools/BinaryBuilder.Dockerfile \
             --tag sqlite-builder \
             --no-cache \
-            --build-arg VARIANT=${{ matrix.variant }} \
-            --build-arg NODE_VERSION=${{ matrix.node }} \
+            --build-arg VARIANT=alpine3.20 \
+            --build-arg NODE_VERSION=24 \
             .
           CONTAINER_ID=$(docker create -it sqlite-builder)
-          docker cp $CONTAINER_ID:/usr/src/build/build/ ./build
-
-      - name: Prepare for saving artifact
-        run: |
-          ARTIFACT_NAME=$(echo prebuilt-binaries-${{ matrix.variant }}-${{ matrix.os }} | sed 's/[^-a-zA-Z0-9]/_/g')
-          echo "Artifact name is '$ARTIFACT_NAME'"
-          echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
-        shell: bash
+          docker cp $CONTAINER_ID:/usr/src/build/prebuilds/ ./prebuilds
 
       - name: Upload binaries to commit artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: ${{ env.ARTIFACT_NAME }}
-          path: build/stage/*/*
+          name: prebuilt-binaries-musl-${{ matrix.arch }}
+          path: prebuilds/*
           retention-days: 7
 
       - name: Upload binaries to GitHub Release
-        run: yarn install --ignore-scripts && yarn node-pre-gyp-github publish
+        run: yarn install --ignore-scripts && yarn upload --upload-all ${{ github.token }}
         if: startsWith(github.ref, 'refs/tags/')
-        env:
-          NODE_PRE_GYP_GITHUB_TOKEN: ${{ github.token }}

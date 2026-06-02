@@ -4,14 +4,16 @@
 
 #define _GNU_SOURCE
 #include <features.h>
+#include <unistd.h>
 #undef _GNU_SOURCE
 
-#if defined(__USE_GNU)
+#if defined(__GLIBC__)
 
 #if defined(__x86_64__)
 __asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
 __asm__(".symver exp,exp@GLIBC_2.2.5");
 __asm__(".symver log,log@GLIBC_2.2.5");
+__asm__(".symver log2,log2@GLIBC_2.2.5");
 __asm__(".symver pow,pow@GLIBC_2.2.5");
 __asm__(".symver fmod,fmod@GLIBC_2.2.5");
 __asm__(".symver fcntl64,fcntl@GLIBC_2.2.5");
@@ -21,6 +23,7 @@ __asm__(".symver fcntl64,fcntl@GLIBC_2.2.5");
 __asm__(".symver memcpy,memcpy@GLIBC_2.17");
 __asm__(".symver exp,exp@GLIBC_2.17");
 __asm__(".symver log,log@GLIBC_2.17");
+__asm__(".symver log2,log2@GLIBC_2.17");
 __asm__(".symver pow,pow@GLIBC_2.17");
 __asm__(".symver fmod,fmod@GLIBC_2.17");
 __asm__(".symver fcntl64,fcntl@GLIBC_2.17");
