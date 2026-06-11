@@ -65,6 +65,9 @@
   "optionalDependencies": {
     "node-gyp": "12.x"
   },
+  "engines": {
+    "node": ">=20.17.0"
+  },
   "scripts": {
     "install": "prebuild-install -r napi || node-gyp rebuild",
     "prebuild": "prebuild --runtime napi --all --verbose",
